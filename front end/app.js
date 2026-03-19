@@ -346,8 +346,13 @@ loginForm.addEventListener('submit', (e) => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
-  if (!/^[0-9]{10}$/.test(username)) {
-    loginMsg.textContent = 'Username must be exactly 10 digits.';
+  if (!/^[0-9]{12}$/.test(username)) {
+    loginMsg.textContent = 'Username must be exactly 12 digits.';
+    return;
+  }
+
+  if (!username.startsWith('7155')) {
+    loginMsg.textContent = 'invalid registration number';
     return;
   }
 
