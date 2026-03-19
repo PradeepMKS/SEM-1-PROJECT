@@ -33,9 +33,12 @@ thead { background: #eef2ff; }
 th, td { border: 1px solid var(--border); text-align: left; padding: 8px; }
 tr:nth-child(even) { background: #fafbff; }
 .badge { padding: 3px 8px; border-radius: 999px; font-size: 0.8rem; color: #fff; }
-.badge.working { background: #16a34a; }
+.badge.campus_placed { background: #16a34a; }
+.badge.outcampus_placed { background: #1e3a8a; }
 .badge.higher_studies { background: #1d4ed8; }
-.badge.business { background: #b45309; }
+.badge.entrepreneur { background: #b45309; }
+.badge.government_exam { background: #7c2d12; }
+.badge.other { background: #6b7280; }
 .action-btn { border:none; background:none; cursor:pointer; margin-right:6px; color: var(--accent); }
 .action-btn.delete { color: var(--danger); }
 @media (max-width: 860px) {

@@ -10,74 +10,155 @@
   <div class="container">
     <h1>Passed-Out Student Tracker</h1>
 
-    <section class="form-section">
-      <h2>Add / Edit Student</h2>
-      <form id="studentForm">
-        <input type="hidden" id="studentId" />
+    <section class="login-section" id="loginSection">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label>User name (10-digit number) <span>*</span></label>
+        <input type="text" id="loginUsername"  required />
 
-        <label>Name <span>*</span></label>
-        <input type="text" id="name" required />
+        <label>Password <span>*</span></label>
+        <input type="password" id="loginPassword" required />
 
-        <label>Graduation Year</label>
-        <input type="number" id="graduationYear" min="1900" max="2100" />
-
-        <label>Department</label>
-        <input type="text" id="department" />
-
-        <label>Status <span>*</span></label>
-        <select id="status" required>
-          <option value="">Select status</option>
-          <option value="working">Working</option>
-          <option value="higher_studies">Higher Studies</option>
-          <option value="business">Business</option>
-        </select>
-
-        <label>Organization / College / Business</label>
-        <input type="text" id="organization" />
-
-        <label>Position / Course / Role</label>
-        <input type="text" id="position" />
-
-        <label>Location</label>
-        <input type="text" id="location" />
-
-        <label>Notes</label>
-        <textarea id="notes" rows="3"></textarea>
-
-        <button type="submit">Save</button>
-        <button type="button" id="resetBtn">Reset</button>
+        <button type="submit">Login</button>
       </form>
+      <div id="loginMsg" style="margin-top:12px;color:red;"></div>
     </section>
 
-    <section class="table-section">
-      <h2>All Students</h2>
-      <div class="filters">
-        <input type="text" id="searchText" placeholder="Search by name or org" />
-        <select id="filterStatus">
-          <option value="">All statuses</option>
-          <option value="working">Working</option>
-          <option value="higher_studies">Higher Studies</option>
-          <option value="business">Business</option>
-        </select>
-        <button id="filterBtn">Filter</button>
+    <div id="notificationMsg" style="margin-top:12px;color:green; display:none;"></div>
+
+    <section id="mainSection" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>Logged in as: <strong id="loggedUserNum"></strong></div>
+        <button id="logoutBtn" type="button">Logout</button>
       </div>
 
-      <table id="studentsTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Year</th>
-            <th>Dept</th>
-            <th>Status</th>
-            <th>Org</th>
-            <th>Position</th>
-            <th>Location</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <section class="form-section">
+        <h2>Student Operation</h2>
+
+        <div class="mode-buttons" style="display:flex; gap:8px; margin-bottom:10px;">
+          <button type="button" id="modeCreateBtn" class="mode-btn">New Entry</button>
+          <button type="button" id="modeUpdateBtn" class="mode-btn">Update Data</button>
+          <button type="button" id="modeViewBtn" class="mode-btn">Fetch Data</button>
+        </div>
+
+        <input type="hidden" id="appMode" value="" />
+
+        <div id="updateSearchSection" style="margin-top:12px; display:none;">
+          <label>Search by Name</label>
+          <input type="text" id="searchName" placeholder="Enter student name" />
+
+          <label>Search by Batch</label>
+          <select id="searchBatch">
+            <option value="">Select batch</option>
+            <option value="2017">2017-2021</option>
+            <option value="2018">2018-2022</option>
+            <option value="2019">2019-2023</option>
+            <option value="2020">2020-2024</option>
+            <option value="2021">2021-2025</option>
+          </select>
+
+          <button id="findBtn" type="button">Find and Load Data</button>
+        </div>
+
+        <form id="studentForm">
+          <input type="hidden" id="studentId" />
+
+          <label>Name <span>*</span></label>
+          <input type="text" id="name" required />
+
+          <label>Batch (Year) <span>*</span></label>
+          <select id="graduationYear" required>
+            <option value="">Select batch</option>
+            <option value="2017">2017-2021</option>
+            <option value="2018">2018-2022</option>
+            <option value="2019">2019-2023</option>
+            <option value="2020">2020-2024</option>
+            <option value="2021">2021-2025</option>
+          </select>
+
+          <label>Placed?</label>
+          <div style="display:flex; gap:10px; margin-top:4px;">
+            <label><input type="radio" name="isPlaced" value="yes" id="placedYes" /> Yes</label>
+            <label><input type="radio" name="isPlaced" value="no" id="placedNo" checked /> No</label>
+          </div>
+
+          <div id="placementDetails" style="display:none; margin-top:8px;">
+            <label>Placement Type</label>
+            <select id="placementType">
+              <option value="">Select</option>
+              <option value="campus_placed">Campus Interview - Placed</option>
+              <option value="outcampus_placed">Out Campus Interview - Placed</option>
+            </select>
+
+            <label>Company Name</label>
+            <input type="text" id="organization" placeholder="Company name (required for placed)" />
+          </div>
+
+          <div id="notPlacedDetails" style="margin-top:8px;">
+            <label>Current Status (if not placed)</label>
+            <select id="nonPlacedStatus">
+              <option value="higher_studies">Higher Studies</option>
+              <option value="entrepreneur">Entrepreneur</option>
+              <option value="government_exam">Government Exam</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <label>Department</label>
+          <input type="text" id="department" />
+
+          <label>Position / Course / Role</label>
+          <input type="text" id="position" />
+
+          <label>Location</label>
+          <input type="text" id="location" />
+
+          <input type="hidden" id="status" required />
+
+          <button type="submit">Save</button>
+          <button type="button" id="resetBtn">Reset</button>
+        </form>
+      </section>
+
+      <section class="table-section">
+        <h2>All Students</h2>
+        <div class="filters">
+          <input type="text" id="searchText" placeholder="Search by name or company" />
+          <select id="filterStatus">
+            <option value="">All outcomes</option>
+            <option value="campus_placed">Campus Interview - Placed</option>
+            <option value="outcampus_placed">Out Campus Interview - Placed</option>
+            <option value="higher_studies">Higher Studies</option>
+            <option value="entrepreneur">Entrepreneur</option>
+            <option value="government_exam">Government Exam</option>
+          </select>
+          <select id="sortBy">
+            <option value="year_asc">Batch Asc</option>
+            <option value="year_desc">Batch Desc</option>
+            <option value="name_asc">Name A-Z</option>
+            <option value="name_desc">Name Z-A</option>
+          </select>
+          <button id="filterBtn">Filter / Sort</button>
+        </div>
+
+        <table id="studentsTable">
+          <thead>
+            <tr>
+              <th>Batch (Year)</th>
+              <th>Name</th>
+              <th>Company / Organization</th>
+              <th>Outcome</th>
+              <th>Department</th>
+              <th>Position / Course / Role</th>
+              <th>Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
     </section>
+  </div>
   </div>
 
   <script src="app.js"></script>
