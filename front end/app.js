@@ -13,6 +13,7 @@ const appMode = document.getElementById('appMode');
 const modeCreateBtn = document.getElementById('modeCreateBtn');
 const modeUpdateBtn = document.getElementById('modeUpdateBtn');
 const modeViewBtn = document.getElementById('modeViewBtn');
+let isLoggedIn = false;
 const updateSearchSection = document.getElementById('updateSearchSection');
 const searchName = document.getElementById('searchName');
 const searchBatch = document.getElementById('searchBatch');
@@ -22,6 +23,9 @@ const form = document.getElementById('studentForm');
 const studentsTableBody = document.querySelector('#studentsTable tbody');
 const resetBtn = document.getElementById('resetBtn');
 const filterBtn = document.getElementById('filterBtn');
+
+// safety net against accidental full-page submit
+form.onsubmit = (e) => { e.preventDefault(); return false; };
 
 const fields = {
   id: document.getElementById('studentId'),
@@ -112,13 +116,17 @@ const setStatusFromInputs = () => {
   }
 };
 
-const resetForm = () => {
+const resetStudentForm = () => {
   form.reset();
   fields.id.value = '';
   placedNo.checked = true;
   applyPlacementUI();
-  // Keep current mode button state but hide form/table until mode button clicked,
-  // if mode was none, nothing appears. For create/update resets, remain in create mode.
+  fields.status.value = '';
+};
+
+const resetForm = () => {
+  resetStudentForm();
+  // Keep current mode button state; do not move back to login.
   if (appMode.value !== 'create' && appMode.value !== 'update' && appMode.value !== 'view') {
     applyModeUI('');
   } else {
@@ -295,7 +303,13 @@ form.addEventListener('submit', async (e) => {
       notificationMsg.style.display = 'none';
     }, 3000);
 
-    resetForm();
+    // keep login state as-is and show main UI after save
+    if (isLoggedIn) {
+      loginSection.style.display = 'none';
+      mainSection.style.display = 'block';
+    }
+
+    resetStudentForm();
     await loadStudents();
   } catch (err) {
     console.error('Network error', err);
@@ -315,6 +329,10 @@ placementType.addEventListener('change', () => { if (placementType.value) fields
 nonPlacedStatus.addEventListener('change', () => { if (nonPlacedStatus.value) fields.status.value = nonPlacedStatus.value; });
 
 logoutBtn.addEventListener('click', () => {
+  isLoggedIn = false;
+  localStorage.removeItem('alumniLoggedIn');
+  localStorage.removeItem('alumniLoggedUser');
+
   loginSection.style.display = 'block';
   mainSection.style.display = 'none';
   loginMsg.textContent = '';
@@ -338,6 +356,10 @@ loginForm.addEventListener('submit', (e) => {
     return;
   }
 
+  isLoggedIn = true;
+  localStorage.setItem('alumniLoggedIn', 'true');
+  localStorage.setItem('alumniLoggedUser', username);
+
   loginMsg.textContent = '';
   loginSection.style.display = 'none';
   mainSection.style.display = 'block';
@@ -346,9 +368,19 @@ loginForm.addEventListener('submit', (e) => {
   resetForm();
 });
 
-// on load, start at login screen
-loginSection.style.display = 'block';
-mainSection.style.display = 'none';
+// on load, restore login session if exists
+if (localStorage.getItem('alumniLoggedIn') === 'true') {
+  isLoggedIn = true;
+  const savedUser = localStorage.getItem('alumniLoggedUser') || '';
+  loginSection.style.display = 'none';
+  mainSection.style.display = 'block';
+  loggedUserNum.textContent = savedUser;
+  applyModeUI('');
+} else {
+  loginSection.style.display = 'block';
+  mainSection.style.display = 'none';
+}
+
 applyModeUI();
 applyPlacementUI();
 
